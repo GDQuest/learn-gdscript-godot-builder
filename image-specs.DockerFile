@@ -5,6 +5,7 @@ ENV PATH="${PATH}:/osxcross/bin" \
   OSXCROSS_SDK_ROOT=/osxcross/SDK/MacOSX15.4.sdk
 
 COPY MacOSX15.4.sdk.tar.xz MacOSX15.4.sdk.tar.xz
+COPY start.sh start.sh
 
 RUN dnf install -y \
 
@@ -30,6 +31,14 @@ RUN dnf install -y \
   TARGET_DIR="/osxcross" UNATTENDED=1 ./build.sh && \
   ./build_compiler_rt.sh && \
   # clean
-  cd .. && rm -rf osxcross-src
+  cd .. && rm -rf osxcross-src && \
 
-CMD /bin/bash
+  # emscripten
+  git clone https://github.com/emscripten-core/emsdk.git && \
+  cd emsdk && \
+
+  git pull && ./emsdk install latest && \
+  ./emsdk activate latest && cd .. && mkdir output && \
+  chmod +x /start.sh
+
+CMD ["/start.sh"]
