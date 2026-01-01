@@ -1,43 +1,45 @@
-FROM fedora:32 AS builder
+FROM fedora:43
 
-ENV PATH="${PATH}:/osxcross/bin" \
+ENV GODOT_SDK_LINUX_X86_64=/x86_64-godot-linux-gnu_sdk-buildroot \
+  PATH="/osxcross/bin:${PATH}" \
+  BASE_PATH=${PATH} \
   OSXCROSS_ROOT=/osxcross \
   OSXCROSS_SDK_ROOT=/osxcross/SDK/MacOSX${OSX_SDK_VERSION}.sdk
 
 COPY bootstrap.sh bootstrap.sh
 COPY MacOSX${OSX_SDK_VERSION}.sdk.tar.xz MacOSX${OSX_SDK_VERSION}.sdk.tar.xz
 
-RUN dnf install -y \
-  # osxcross deps
-  openssl-devel make xz-devel libxml2-devel patch cpio git bzip2 \
-  bzip2-libs zlib-devel bzip2-devel xz findutils git \
+RUN dnf install -y --setopt=install_weak_deps=False \
+  # base
+  bash binutils bzip2 curl file findutils gettext git make nano patch pkgconfig python3-pip unzip which xz \
 
-  # godot deps
-  scons pkgconfig libX11-devel libXcursor-devel libXrandr-devel libXinerama-devel \
-  libXi-devel mesa-libGL-devel mesa-libGLU-devel alsa-lib-devel pulseaudio-libs-devel \
-  libudev-devel yasm gcc-c++ libstdc++-static libatomic-static zip unzip git \
+  # windows
+  mingw32-gcc mingw32-gcc-c++ mingw32-winpthreads-static mingw64-gcc mingw64-gcc-c++ mingw64-winpthreads-static \
 
-  # windows deps
-  mingw64-gcc-c++ mingw64-winpthreads-static mingw32-gcc-c++ mingw32-winpthreads-static \
+  # osxcross
+  automake autoconf bzip2-devel cmake gcc gcc-c++ libdispatch libicu-devel libtool \
+  libxml2-devel openssl-devel uuid-devel yasm \
 
-  # emsdk
-  python3.10 && \
+  # web
+  libatomic && \
 
-  # Fedora:32's cmake is too old, so we'll build it ourselves
-  curl -OL https://github.com/Kitware/CMake/releases/download/v3.31.10/cmake-3.31.10.tar.gz && \
-  tar -xzf cmake-3.31.10.tar.gz && cd cmake-3.31.10 && \
-  ./bootstrap && make -j$(nproc) && make install && cd / && \
-  rm -rf cmake-3.31.10 && rm -f cmake-3.31.10.tar.gz && \
+  pip install scons==4.10.0 && \
+
+  # linux build root
+  curl -LO https://github.com/godotengine/buildroot/releases/download/godot-2023.08.x-4/x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2 && \
+  tar xf x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2 && \
+  rm -f x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2 && \
+  cd x86_64-godot-linux-gnu_sdk-buildroot && \
+  ./relocate-sdk.sh && \
+  cd .. && \
 
   # clone OSX Cross
   git clone --depth=1 https://github.com/tpoechtrager/osxcross.git "osxcross-src" && \
   # package
   mv MacOSX${OSX_SDK_VERSION}.sdk.tar.xz osxcross-src/tarballs/MacOSX${OSX_SDK_VERSION}.sdk.tar.xz && \
-  # build. Fedora:32's clang is too old, so we'll build it ourselves.
-  cd osxcross-src && UNATTENDED=1 ./build_clang.sh && cd /osxcross-src/build/clang-20.1.8/build_stage2 && \
-  # build OSXCross
-  make install && cd /osxcross-src && TARGET_DIR="/osxcross" UNATTENDED=1 ./build.sh && ./build_compiler_rt.sh && \
-
+  # build OSXCross and apple clang
+  cd /osxcross-src && UNATTENDED=1 ENABLE_CLANG_INSTALL=1 INSTALLPREFIX=/usr ./build_apple_clang.sh && \
+  TARGET_DIR="/osxcross" UNATTENDED=1 ./build.sh && ./build_compiler_rt.sh && \
   cd / && rm -rf osxcross-src && \
 
   # emscripten

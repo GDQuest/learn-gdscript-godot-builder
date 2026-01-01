@@ -3,7 +3,7 @@
 source ./.env
 
 curl -OL https://raw.githubusercontent.com/${GODOT_REPO}/refs/heads/${GODOT_BRANCH}/version.py
-GODOT_VERSION=$(python -c "import pathlib; ns={}; exec(pathlib.Path('version.py').read_text(), ns); print(f\"{ns['major']}.{ns['minor']}.{ns['patch']}\")")
+GODOT_VERSION=$(python3 -c "import pathlib; ns={}; exec(pathlib.Path('version.py').read_text(), ns); print(f\"{ns['major']}.{ns['minor']}.{ns['patch']}\")")
 rm -f version.py
 
 if [[ ! -e "./build-output/godot-learn.${GODOT_VERSION}.templates.zip" || ! -e "./build-output/godot-learn.${GODOT_VERSION}.headless.zip" || ! -e "./build-output/godot-learn.${GODOT_VERSION}.editor.zip" ]]; then
