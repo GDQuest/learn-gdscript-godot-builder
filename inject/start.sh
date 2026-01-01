@@ -58,7 +58,7 @@ cp -r misc/dist/osx_template.app bin/osx_template.app
 mkdir -p bin/osx_template.app/Contents/MacOS
 cp bin/godot.osx.opt.universal bin/osx_template.app/Contents/MacOS/godot_osx_release.64
 cp bin/godot.osx.opt.universal bin/osx_template.app/Contents/MacOS/godot_osx_debug.64
-chmod +x osx_template.app/Contents/MacOS/godot_osx*
+chmod +x bin/osx_template.app/Contents/MacOS/godot_osx*
 zip -q -9 -r bin/osx_template.zip bin/osx_template.app
 
 echo "Building web export"
