@@ -69,7 +69,7 @@ EMSDK_PYTHON=/usr/bin/python3.10 scons p=javascript target=release optimize=spee
 
 echo "Packing result"
 
-GODOT_VERSION=$(python -c "import pathlib; ns={}; exec(pathlib.Path('version.py').read_text(), ns); print(f\"{ns['major']}.{ns['minor']}.{ns['patch']}\")")
+GODOT_VERSION=$(/usr/bin/python3.10 -c "import pathlib; ns={}; exec(pathlib.Path('version.py').read_text(), ns); print(f\"{ns['major']}.{ns['minor']}.{ns['patch']}\")")
 
 zip -j /output/godot-learn.${GODOT_VERSION}.templates.zip bin/godot.windows.opt.64.exe bin/godot.javascript.opt.zip bin/godot.x11.opt.64 bin/osx_template.zip
 zip -j /output/godot-learn.${GODOT_VERSION}.headless.zip bin/godot_server.x11.opt.tools.64
