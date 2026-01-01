@@ -2,7 +2,7 @@
 
 source ./.env
 
-DOCKER_URI=docker.io/${DOCKER_USERNAME}/godot-learn-builder:${DOCKER_BUILD_VERSION}
+DOCKER_URI="docker.io/${DOCKER_USERNAME}/godot-learn-builder:${DOCKER_BUILDER_VERSION}"
 
 if ! podman image exists ${DOCKER_URI}; then
   podman pull ${DOCKER_URI}
