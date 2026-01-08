@@ -2,6 +2,11 @@
 
 source ./.env
 
+if [[ ! "$(command -v podman)" ]]; then
+  echo "No podman found - install podman"
+  exit 1
+fi
+
 if [[ ! -e "MacOSX${OSX_SDK_VERSION}.sdk.tar.xz" ]]; then
   echo "MacOSX${OSX_SDK_VERSION}.sdk.tar.xz not found. See OSXCross repo for packaging instructions or update ./.env version."
   exit 1

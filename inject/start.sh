@@ -7,6 +7,7 @@ rm -rf ./bin
 echo "Compiling headless"
 
 # make sure the x11 versions use the glibc 2.28 roots by godot team
+export BASE_PATH=${PATH}
 export PATH=${GODOT_SDK_LINUX_X86_64}/bin:${BASE_PATH}
 
 scons p=server target=release_debug lto=full tools=yes LINKFLAGS=-s
@@ -54,12 +55,12 @@ lipo -create bin/godot.osx.opt.arm64 bin/godot.osx.opt.x86_64 -output bin/godot.
 
 echo "Building universal bundle"
 
-cp -r misc/dist/osx_template.app bin/osx_template.app
-mkdir -p bin/osx_template.app/Contents/MacOS
-cp bin/godot.osx.opt.universal bin/osx_template.app/Contents/MacOS/godot_osx_release.64
-cp bin/godot.osx.opt.universal bin/osx_template.app/Contents/MacOS/godot_osx_debug.64
-chmod +x bin/osx_template.app/Contents/MacOS/godot_osx*
-zip -q -9 -r bin/osx_template.zip bin/osx_template.app
+cp -r misc/dist/osx_template.app osx_template.app
+mkdir -p osx_template.app/Contents/MacOS
+cp bin/godot.osx.opt.universal osx_template.app/Contents/MacOS/godot_osx_release.64
+cp bin/godot.osx.opt.universal osx_template.app/Contents/MacOS/godot_osx_debug.64
+chmod +x osx_template.app/Contents/MacOS/godot_osx*
+zip -q -9 -r bin/osx_template.zip osx_template.app
 
 echo "Building web export"
 

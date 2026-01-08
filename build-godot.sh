@@ -2,6 +2,11 @@
 
 source ./.env
 
+if [[ ! "$(command -v podman)" ]]; then
+  echo "No podmasn CLI found - install podman"
+  exit 1
+fi
+
 DOCKER_URI="docker.io/${DOCKER_USERNAME}/godot-learn-builder:${DOCKER_BUILDER_VERSION}"
 
 if ! podman image exists ${DOCKER_URI}; then
@@ -14,4 +19,4 @@ fi
 
 rm -rf build-output
 mkdir build-output
-podman run --env-file ./.env --rm -v ./build-output:/output:Z -v ./inject:/inject:Z ${DOCKER_URI}
+MSYS_NO_PATHCONV=1 podman run --env-file ./.env --rm -v ./build-output:/output:Z -v ./inject:/inject:Z ${DOCKER_URI}

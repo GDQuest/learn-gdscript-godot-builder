@@ -2,12 +2,12 @@
 
 source ./.env
 
-curl -OL https://raw.githubusercontent.com/${GODOT_REPO}/refs/heads/${GODOT_BRANCH}/version.py
-GODOT_VERSION=$(python3 -c "import pathlib; ns={}; exec(pathlib.Path('version.py').read_text(), ns); print(f\"{ns['major']}.{ns['minor']}.{ns['patch']}\")")
-rm -f version.py
-
-if [[ ! -e "./build-output/godot-learn.${GODOT_VERSION}.templates.zip" || ! -e "./build-output/godot-learn.${GODOT_VERSION}.headless.zip" || ! -e "./build-output/godot-learn.${GODOT_VERSION}.editor.zip" ]]; then
-  echo "Godot artefacts for version ${GODOT_VERSION} do not exist in build-output - run build-godot.sh or update .env with HEAD version"
+if [[ "$(command -v python3)" ]]; then
+  export PYTHON_EXEC="python3"
+elif [[ "$(command -v python)" ]]; then
+  export PYTHON_EXEC="python"
+else
+  echo "No python found - install python 3.x"
   exit 1
 fi
 
@@ -18,6 +18,15 @@ fi
 
 if ! gh auth status >/dev/null 2>&1; then
   echo "GH not authenticated - run gh auth login"
+  exit 1
+fi
+
+curl -OL https://raw.githubusercontent.com/${GODOT_REPO}/refs/heads/${GODOT_BRANCH}/version.py
+GODOT_VERSION=$(${PYTHON_EXEC} -c "import pathlib; ns={}; exec(pathlib.Path('version.py').read_text(), ns); print(f\"{ns['major']}.{ns['minor']}.{ns['patch']}\")")
+rm -f version.py
+
+if [[ ! -e "./build-output/godot-learn.${GODOT_VERSION}.templates.zip" || ! -e "./build-output/godot-learn.${GODOT_VERSION}.headless.zip" || ! -e "./build-output/godot-learn.${GODOT_VERSION}.editor.zip" ]]; then
+  echo "Godot artefacts for version ${GODOT_VERSION} do not exist in build-output - run build-godot.sh or update .env with HEAD version"
   exit 1
 fi
 
