@@ -1,8 +1,8 @@
 # Custom Godot builder for Learn GDScript
 
-This repository serves to build a custom version of the Godot engine's templates, editor and headless editor, provided a functional repository and branch.
+This repository has scripts to build a custom version of the Godot engine's templates, editor, and headless editor for [Learn GDScript From Zero](https://github.com/GDQuest/learn-gdscript/).
 
-This is configured for 3.x builds and has not been tested or vetoed for 4.x build.
+At the time of writing the repository is set up for Godot 3 builds and has not been tested for Godot 4.
 
 ## Configuration
 
@@ -37,7 +37,7 @@ Based on Fedora 43, while building the image, it installs on itself:
 - Builds Apple clang and OSXCross to build the MacOS template
 - EmScripten to build the Javascript template
 
-Everything is in one image, which is fairly meaty, but we shouldn't have to rebuild a godot-building image that often, and it's convenient to just build everything in one script.
+Everything is in one image, which is heavy. We use this because we very rarely have to rebuild a godot-building image or to build a new version of Godot.
 
 An image is already available at `docker.io/razoric480/godot-learn-builder:1.0.0`
 
